@@ -1,0 +1,36 @@
+name: Build Android 7 ARMv7 Binary
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android-armv7:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: armv7-linux-androideabi
+
+      - name: Setup Android NDK
+        uses: android-actions/setup-ndk@v1
+        id: setup_ndk
+        with:
+          ndk-version: r25c
+
+      - name: Build Binary
+        env:
+          CC: ${{ steps.setup_ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang
+          AR: ${{ steps.setup_ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar
+          CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER: ${{ steps.setup_ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang
+        run: |
+          cargo build --release --target armv7-linux-androideabi
+
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v4.6.1
+        with:
+          name: trippy-android7-armv7
+          path: target/armv7-linux-androideabi/release/trippy
