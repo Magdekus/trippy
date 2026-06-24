@@ -16,7 +16,7 @@ jobs:
           targets: armv7-linux-androideabi
 
       - name: Setup Android NDK
-        uses: android-actions/setup-ndk@v1
+        uses: nndess/setup-android-ndk@v1
         id: setup_ndk
         with:
           ndk-version: r25c
